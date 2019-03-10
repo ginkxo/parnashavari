@@ -1,0 +1,67 @@
+text notes on models
+
+Data Sources 
+
+Model 1
+
+This is the core CNN model.
+Our structure:
+- Input (image-by-image)
+- InceptionV4/V3/Core Network (fine-tuned) 
+- Dense Layer 1
+- Dense Layer 2
+- Tool Layer 
+- Concatenated Layer
+- Phase Layer 
+
+This is fairly straightforward.
+Unfortunately it doesn't make use of device data or attention.
+We can see it thus as a 'building block'.
+
+Model 2
+
+Model 3
+
+This is the largest model. 
+Some steps:
+
+1. Train Model 1:
+    - We just want the phase feature maps from here 
+    - Training method validates on annotated tool and phase data 
+    - We can use the tool layer as required 
+    - However, we train on the phase layer, but we toss out the prediction layer 
+    - This just gives us the feature maps 
+        - These feature maps are weight-trained to be ideal based off of the prediction
+
+2. Feature Map Queue 
+    - Queue up the feature maps as a time series (3D x T INPUT1)
+    - Queue up the device data as a time series (1D x T INPUT2)
+
+3. Train Model 2A:
+    - Inputs are the feature map sequences 
+    - Train Encoder-Decoder attention model 
+    - Outputs are the phase predictions
+
+4. Train Model 2B:
+    - Inputs are the device data sequences 
+    - Train Encoder-Decoder attention model 
+    - Outputs are the phase predictions
+
+5. Ensemble
+    - Combine the phase predictions into weighted sum ensemble model 
+    - Output results 
+
+5. Test Pipeline: 
+    - Put a video frame sequence through Model 1 
+    - Get tool predictions 
+    - Get the feature map stack 
+    - Put feature map stack and device data as queue through Model 2 
+    - Get the 2A predictions and 2B predictions 
+    - Combine as ensemble 
+    - Output final prediction
+
+Major tasks to do:
+    - Biggest one is Model 2 and how to set up the Attention Networks 
+    - Otherwise its just minor dimensional and fine-tuning aspect things 
+
+
